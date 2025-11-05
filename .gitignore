@@ -1,0 +1,53 @@
+# Klipper temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Log files
+*.log
+*.log.*
+
+# Klipper backup metadata
+.klipper_backup/
+
+# Sensitive configuration (if any)
+secrets.cfg
+passwords.cfg
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.db
+
+# Editor specific
+.vscode/
+.idea/
+*.code-workspace
+
+# Compiled files
+*.o
+*.so
+*.pyc
+
+# Klipper generated files
+klippy.log
+klipper.dict
+
+# Moonraker database
+*.moonraker.db*
+.moonraker_database/
+
+# Backup files
+*.backup
+backup_*
