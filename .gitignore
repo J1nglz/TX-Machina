@@ -11,9 +11,16 @@
 # Klipper backup metadata
 .klipper_backup/
 
-# Sensitive configuration (if any)
+# Sensitive configuration files (use specific patterns to catch variations)
 secrets.cfg
 passwords.cfg
+*secret*
+*password*
+*token*
+*key*.cfg
+*.key
+api_key*
+credentials*
 
 # Python bytecode
 __pycache__/

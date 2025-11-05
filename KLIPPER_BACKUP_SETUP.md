@@ -2,6 +2,14 @@
 
 This guide will help you set up klipper-backup to automatically backup your Klipper configuration files to this GitHub repository using SSH authentication.
 
+## ⚠️ Important Security Notice
+
+**This is a PUBLIC repository** - Anyone can view its contents. Before proceeding:
+- Do NOT commit sensitive information (API keys, passwords, WiFi credentials, etc.)
+- Review your configuration files for sensitive data before backing up
+- Consider making this repository private if it will contain sensitive configurations
+- Never share your SSH private keys or Personal Access Tokens
+
 ## Overview
 
 klipper-backup is a tool that automatically backs up your Klipper 3D printer configuration files to a GitHub repository. This ensures you never lose your printer configurations and can track changes over time.
@@ -28,7 +36,12 @@ SSH keys provide secure authentication without needing to enter passwords. You'l
    
    When prompted:
    - File location: Press Enter to use default (`/home/pi/.ssh/id_ed25519`)
-   - Passphrase: Press Enter twice for no passphrase (recommended for automation)
+   - Passphrase: You can press Enter twice for no passphrase
+   
+   **Security Note**: While using no passphrase is convenient for automation, it means anyone with access to the private key file can authenticate as you. For better security, consider:
+   - Using a passphrase with `ssh-agent` for key management
+   - Using deploy keys (limited to single repository)
+   - Restricting file permissions on your Klipper machine
 
 3. Display your public key:
    ```bash
@@ -216,14 +229,7 @@ To trigger a backup manually at any time:
 klipper-backup
 ```
 
-## Security Notes
-
-1. **SSH Keys**: Keep your private key (`id_ed25519`) secure and never share it
-2. **Deploy Keys**: Use deploy keys when possible for better security isolation
-3. **Sensitive Data**: Avoid committing sensitive information like API keys or passwords
-4. **Public Repository**: Be aware this is a public repository. Consider making it private if it contains sensitive configurations
-
-## Fine-Grained Personal Access Tokens (Alternative)
+## Fine-Grained Personal Access Tokens (Alternative to SSH)
 
 If you prefer using HTTPS with a Personal Access Token instead of SSH:
 
@@ -235,12 +241,39 @@ If you prefer using HTTPS with a Personal Access Token instead of SSH:
    - Repository permissions → **Contents**: Read and write
    - Repository permissions → **Metadata**: Read-only (automatically selected)
 6. Click **Generate token** and copy it immediately (you won't see it again!)
-7. Use HTTPS URL in `backup.cfg`:
-   ```ini
-   url = https://YOUR_TOKEN@github.com/J1nglz/TX-Machina.git
-   ```
 
-**Note**: SSH is generally preferred over tokens for automated backups as it's more secure and doesn't expire.
+### Secure Token Storage
+
+**DO NOT** embed the token directly in configuration files. Use one of these secure methods:
+
+#### Method 1: Git Credential Helper (Recommended)
+```bash
+# Store credentials securely
+git config --global credential.helper store
+
+# Clone using HTTPS (you'll be prompted once for token)
+cd ~/.klipper_backup
+git clone https://github.com/J1nglz/TX-Machina.git
+# Enter your GitHub username
+# Enter your token as the password
+```
+
+#### Method 2: Environment Variable
+```bash
+# Add to ~/.bashrc or ~/.profile
+export GITHUB_TOKEN="your_token_here"
+
+# In backup.cfg, use:
+# url = https://$(echo $GITHUB_TOKEN)@github.com/J1nglz/TX-Machina.git
+```
+
+#### Method 3: SSH is Better
+For automated backups, SSH keys are generally more secure than tokens because:
+- SSH keys don't expire (tokens do)
+- Deploy keys can be limited to a single repository
+- No risk of token exposure in configuration files
+
+**Security Warning**: Never commit tokens to configuration files or expose them in logs.
 
 ## Additional Resources
 
