@@ -275,31 +275,17 @@ description: Start print: home, tilt adjust, mesh, heat, prime
 gcode:
   {% set BED = params.BED|default(60)|float %}
   {% set HOT = params.HOT|default(200)|float %}
-  
-  M117 Heating bed...
+  M117 Heating...
+  M140 S{BED}
+  M104 S{HOT}
   G90
   G28
   Z_TILT_ADJUST
-  
-  # Heat bed to target
-  M140 S{BED}
   M190 S{BED}
-  
-  # Heat nozzle to probing temp
-  M104 S150
-  M109 S150
-  
-  # Use native Klipper adaptive mesh (fast!)
-  BED_MESH_CALIBRATE ADAPTIVE=1 ADAPTIVE_MARGIN=5
-  
-  # Heat nozzle to print temp
-  M104 S{HOT}
   M109 S{HOT}
-  
-  # Purge and print
+  ADAPTIVE_MESH
   LINE_PURGE
   M117 Printing...
-
 [gcode_macro PRINT_END]
 description: Safe end sequence
 gcode:
