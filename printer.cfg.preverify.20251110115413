@@ -209,7 +209,7 @@ sensor_type: EPCOS 100K B57560G104F
 sensor_pin: PC2
 min_temp: -200
 max_temp: 300
-min_extrude_temp: 200
+min_extrude_temp: 170
 pressure_advance: 0.03
 max_extrude_cross_section: 5
 max_extrude_only_distance: 120
@@ -272,20 +272,12 @@ resistance3: 1176
 heater_pin: PA8
 sensor_type: chamber_10k_b3950
 sensor_pin: PC1
-control: pid
-pid_Kp: 74.719
-pid_Ki: 0.644
-pid_Kd: 2168.712
+control: watermark
 max_power: 1.0
 min_temp: -20
 max_temp: 90
-
-[verify_heater chamber]
-# Allow the slow chamber loop to warm without tripping faults.
-max_error: 600
-check_gain_time: 900
-hysteresis: 10
-heating_gain: 1
+#watermark_hysteresis: 2.0
+#verify_heater: false
 
 # -------- QoL --------
 [force_move]
@@ -379,34 +371,6 @@ gcode:
 description: Turn chamber heater off
 gcode:
   SET_HEATER_TEMPERATURE HEATER=chamber TARGET=0
-
-[gcode_macro LOAD_FILAMENT]
-description: Heat extruder and load filament
-gcode:
-  {% set TEMP = params.TEMP|default(210)|float %}
-  M117 Heating for load...
-  M109 S{TEMP}
-  M117 Loading filament...
-  G91
-  G1 E50 F300
-  G1 E30 F150
-  G90
-  M117 Load complete
-
-[gcode_macro UNLOAD_FILAMENT]
-description: Heat extruder and unload filament
-gcode:
-  {% set TEMP = params.TEMP|default(200)|float %}
-  M117 Heating for unload...
-  M109 S{TEMP}
-  M117 Unloading filament...
-  G91
-  G1 E10 F300
-  G1 E-50 F300
-  G1 E-30 F300
-  G90
-  M117 Unload complete
-
 [input_shaper]
 shaper_type_x: mzv
 shaper_freq_x: 65.6
