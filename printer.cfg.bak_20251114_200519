@@ -236,7 +236,7 @@ points:
 speed: 250
 horizontal_move_z: 15
 retries: 7
-retry_tolerance: 0.04
+retry_tolerance: 0.02
 [bed_mesh]
 speed: 300
 horizontal_move_z: 15
@@ -279,15 +279,15 @@ gcode:
   M117 Heating bed...
   G90
   G28
-  #Z_TILT_ADJUST
+  Z_TILT_ADJUST
   
   # Heat bed to target
   M140 S{BED}
   M190 S{BED}
   
   # Heat nozzle to probing temp
-  #M104 S150
-  #M109 S150
+  M104 S150
+  M109 S150
   
   # Use native Klipper adaptive mesh (fast!)
   BED_MESH_CALIBRATE ADAPTIVE=1 ADAPTIVE_MARGIN=5

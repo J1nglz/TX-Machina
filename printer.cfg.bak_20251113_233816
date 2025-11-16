@@ -187,7 +187,7 @@ pid_kd: 1065.367
 
 # -------- Filament Runout Sensor --------
 [filament_switch_sensor filament_sensor]
-switch_pin: ^!PA9  # Enable internal pull-up and invert logic (active-low switch)
+switch_pin: PA9  # Inverted logic, no pull-up
 pause_on_runout: True
 runout_gcode:
     M117 Filament Runout!
@@ -236,7 +236,7 @@ points:
 speed: 250
 horizontal_move_z: 15
 retries: 7
-retry_tolerance: 0.04
+retry_tolerance: 0.02
 [bed_mesh]
 speed: 300
 horizontal_move_z: 15
@@ -279,15 +279,15 @@ gcode:
   M117 Heating bed...
   G90
   G28
-  #Z_TILT_ADJUST
+  Z_TILT_ADJUST
   
   # Heat bed to target
   M140 S{BED}
   M190 S{BED}
   
   # Heat nozzle to probing temp
-  #M104 S150
-  #M109 S150
+  M104 S150
+  M109 S150
   
   # Use native Klipper adaptive mesh (fast!)
   BED_MESH_CALIBRATE ADAPTIVE=1 ADAPTIVE_MARGIN=5
@@ -371,60 +371,3 @@ damping_ratio_y: 0.10
 #*# max_x = 119.0
 #*# min_y = 95.0
 #*# max_y = 125.0
-# Chamber heater configuration and helper macros
-# Restore these blocks into printer.cfg to enable chamber control.
-
-[thermistor chamber_10k_b3950]
-temperature1: 22.0
-resistance1: 11480
-temperature2: 47.4
-resistance2: 4910
-temperature3: 136.0
-resistance3: 1176
-
-[heater_generic chamber]
-heater_pin: PA8
-sensor_type: chamber_10k_b3950
-sensor_pin: PC1
-control: watermark
-max_delta: 3.0
-min_temp: -20
-max_temp: 90
-
-[verify_heater chamber]
-# Allow the slow chamber loop to warm without tripping faults.
-max_error: 600
-check_gain_time: 900
-hysteresis: 10
-heating_gain: 1
-
-
-[gcode_macro CHAMBER_SET]
-description: Set chamber heater target using watermark control
-gcode:
-  {% set TARGET = params.TARGET|default(30)|float %}
-  SET_HEATER_TEMPERATURE HEATER=chamber TARGET={TARGET}
-
-[gcode_macro CHAMBER_OFF]
-description: Turn chamber heater off
-gcode:
-  SET_HEATER_TEMPERATURE HEATER=chamber TARGET=0
-
-[gcode_macro M141]
-description: Set chamber temperature (M141 S<temp>)
-gcode:
-  {% set S = params.S|default(0)|float %}
-  SET_HEATER_TEMPERATURE HEATER=chamber TARGET={S}
-
-[gcode_macro M191]
-description: Wait for chamber temperature (M191 S<temp>)
-gcode:
-  {% set S = params.S|default(0)|float %}
-  {% if S > 0 %}
-    M117 Waiting for chamber: {S}C
-    SET_HEATER_TEMPERATURE HEATER=chamber TARGET={S}
-    TEMPERATURE_WAIT SENSOR="heater_generic chamber" MINIMUM={S}
-    M117 Chamber ready
-  {% else %}
-    SET_HEATER_TEMPERATURE HEATER=chamber TARGET=0
-  {% endif %}
