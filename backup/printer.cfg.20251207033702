@@ -209,7 +209,6 @@ min_extrude_temp: 170
 pressure_advance: 0.03
 max_extrude_cross_section: 5
 max_extrude_only_distance: 120
-smooth_time: 5.0
 control: pid
 pid_kp: 19.746
 pid_ki: 0.779
